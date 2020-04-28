@@ -1,5 +1,8 @@
 sudo: true
+os: linux
 cache: false
+language: generic
+
 env:
 - URL=https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
 before_install:
