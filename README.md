@@ -1,54 +1,139 @@
-# sfdx-travisci [![Build Status](https://travis-ci.org/forcedotcom/sfdx-travisci.svg?branch=master)](https://travis-ci.org/forcedotcom/sfdx-travisci) 
+# Utilligent DX framework Package
 
-For a fully guided walk through of setting up and configuring this sample, see the [Continuous Integration Using Salesforce DX](https://trailhead.salesforce.com/modules/sfdx_travis_ci) Trailhead module.
+This repository contains the Salesforce Metadata for the Utilligent DX framework Package.
 
-This repository shows one way you can successfully setup Salesforce DX with Travis CI. We make a few assumptions in this README:
+## Installation
 
-- You know how to get your Github repository setup with Travis CI. (Here's their [Getting Started guide](https://docs.travis-ci.com/user/getting-started/).)
-- You've installed the [Travis CLI](https://github.com/travis-ci/travis.rb#installation). 
-- You have properly setup JWT-Based Authorization Flow (i.e. headless). I recommend using [these steps for generating your Self-Signed SSL Certificate](https://devcenter.heroku.com/articles/ssl-certificate-self). 
+Install CLI - https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_install_cli.htm
 
-If any any of these assumptions aren't true, the following steps won't work.
+Install VS Code - https://visualstudio.microsoft.com/downloads/
 
-## Getting Started
+Download JDK & Set environment variable path- https://docs.oracle.com/en/java/javase/12/install/installation-jdk-microsoft-windows-platforms.html#GUID-371F38CC-248F-49EC-BB9C-C37FC89E52A0
 
-1) Make sure you have the Salesforce CLI installed. Check by running `sfdx force --help` and confirm you see the command output. If you don't have it installed you can download and install it from [here](https://developer.salesforce.com/tools/sfdxcli).
+Download GIT extensions - https://git-scm.com/
 
-2) Confirm you can perform a JWT-based auth: `sfdx force:auth:jwt:grant --clientid <your_consumer_key> --jwtkeyfile server.key --username <your_username> --setdefaultdevhubusername`
+Download Nodejs - https://nodejs.org/en/download/
 
-   **Note:** For more info on setting up JWT-based auth see [Authorize an Org Using the JWT-Based Flow](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_auth_jwt_flow.htm) in the [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev).
+Download - https://rubyinstaller.org/downloads/ For travis CI ruby is required
 
-3) [Fork](http://help.github.com/fork-a-repo/) this repo into your github account using the fork link at the top of the page.
+## Dev Org Setup/ Enable Dev Hub
+Refer Dev Org Setup- https://developer.salesforce.com/docs/atlas.en-us.externalidentityImplGuide.meta/externalidentityImplGuide/external_identity_create_developer_org.htm
 
-4) Clone your forked repo locally: `git clone https://github.com/<git_username>/sfdx-travisci.git`
+Refer Dev Hub Setup- https://developer.salesforce.com/docs/atlas.en-us.216.0.sfdx_setup.meta/sfdx_setup/sfdx_setup_enable_devhub.htm
 
-5) From you JWT-Based connected app on Salesforce, retrieve the generated `Consumer Key`.
+Can use below credentials to login (created by Aswin)
+devorgdx@utilligent.com/utilligent2020
 
-6) Set your `Consumer Key` and `Username` using the Travis CLI. Note that this username is the username that you use to access your Dev Hub.
+Authorize devhub
+sfdx force:auth:web:login -d -a DevHub
 
-    travis env set CONSUMERKEY <your_consumer_key>
-    travis env set USERNAME <your_username>
+sfdx force:auth:jwt:grant --clientid 3MVG97quAmFZJfVx8P9x_C4ywR.FkZx9OlYIpvFinZ9_y4vWWYa3s6yTUfCEUcSm_JP526NP0TyiEyhGNnVtH --username devorgdx@utilligent.com --jwtkeyfile D:/certificates/server.key -u devorgdx@utilligent.com
 
-7) Add your `server.key` that you generated previously to the folder called `assets`.
+## GITHUB Account/ SSH setup
+Refer https://help.github.com/en/github/authenticating-to-github/adding-a-new-ssh-key-to-your-github-account
+Can use below credentials to login
+UtilligentSFDeployment/utilligent2020
+Paraphrase- utilligent
 
-8) Open the `.travis.yml` file and remove the first line that starts with `openssl ...` and save the file.
+Set git username and password by following the steps -https://confluence.atlassian.com/bitbucket/configure-your-dvcs-username-for-commits-950301867.html
 
-9) From the root folder of your local project, encrypt your `server.key` value:
+## Creating Self signed SSL certificate for non prod env
+https://devcenter.heroku.com/articles/ssl-certificate-self
+Open SSL certificate password - utilligent
 
-    travis encrypt-file assets/server.key assets/server.key.enc --add
+## Scratch Org Setup
 
-10) IMPORTANT! Remove your `server.key`: `rm assets/server.key`, you should never store keys or certificates in a public place.
+Refer - https://trailhead.salesforce.com/en/content/learn/projects/quick-start-salesforce-dx/create-and-test-our-scratch-org
 
-And you should be ready to go! Now when you commit and push a change, your change will kick off a Travis CI build.
+1. Clone the repository and cd into the `MyTelstraDX` folder
+```
+git clone https://<d-number>@git02.ae.sda.corp.telstra.com/scm/sbc/b2c-mytelstra-dx.git
+cd b2c-mytelstra-dx/MyTelstraDx
+```
 
-Enjoy!
+2. Authorize Dev Hub
+```
+sfdx force:auth:web:login -a DevHub -r https://telstra-retail.my.salesforce.com [-d]
+```
 
-## Contributing to the Repository ###
+3. Spin up a scratch org with provided scratch definition file
+```
+sfdx force:org:create -f config/template-scratch-def.json -a MyScratchOrg [-d 30] [-v DevHub]
+```
 
-If you find any issues or opportunities for improving this repository, fix them!  Feel free to contribute to this project by [forking](http://help.github.com/fork-a-repo/) this repository and make changes to the content.  Once you've made your changes, share them back with the community by sending a pull request. Please see [How to send pull requests](http://help.github.com/send-pull-requests/) for more information about contributing to Github projects.
+## Push DX Source to Scratch Org
+Skip this section if only validating
 
-## Reporting Issues ###
+1. Push DX source to scratch Org
+```
+sfdx force:source:push -u MyScratchOrg [-f]
+```
 
-If you find any issues with this demo that you can't fix, feel free to report them in the [issues](https://github.com/forcedotcom/sfdx-travisci/issues) section of this repository.
+Push can only be used if the target env is a scratch org.
+For sandbox, use deploy instead.
+```
+sfdx force:source:deploy -u MyScratchOrg
+```
 
-Test
+## Convert Metadata to DX Source
+Only when needed
+
+1. Convert Metadata to DX Source
+
+Delete ../tmpSrc folder (if exists)
+```
+sfdx force:mdapi:convert -r ../src-DO-NOT-USE -d ../tmpSrc
+```
+
+## Validate DX Source in a Scratch Org
+Only when needed
+
+1. Convert DX Source to Metadata
+
+Delete ../tmpMD folder (if exists)
+```
+sfdx force:source:convert -r force-app -d ../tmpMD
+```
+
+2. Validate if Metadata can be deployed to scratch Org
+```
+sfdx force:mdapi:deploy -d ../tmpMD -u MyScratchOrg -c
+```
+
+## Pull Changes from Scratch Org
+Only when needed
+```
+sfdx force:source:pull -u MyScratchOrg [-f]
+```
+
+## Retrieve Metadata from Scratch Org
+Only when needed
+```
+sfdx force:mdapi:retrieve -u MyScratchOrg -r ../retrieve -k ../package.xml
+```
+
+## Deploy Metadata to Scratch Org
+Only when needed
+```
+sfdx force:mdapi:deploy -d ../tmpMD -u MyScratchOrg
+```
+
+## Export Data
+Only when needed
+Use Relational SOQL Queries if you need to export more than one related objects.
+This SOQL exports all Accounts and their associated Contacts to JSON files.
+These JSON files can be extracted once, added to repository and then imported to other Orgs.
+```
+sfdx force:data:tree:export -u MyScratchOrg -q "select Name, (select FirstName, LastName from Contacts) from Account" -p -d Data
+```
+
+## Import Data
+Only when needed
+```
+sfdx force:data:tree:import -u MyScratchOrg -p Data\Account-Contact-plan.json
+```
+
+## Reference
+https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev
+
+https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference
